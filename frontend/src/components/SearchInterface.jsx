@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { queryRAG } from '../api';
 import './SearchInterface.css';
+import SmartSuggestions from './SmartSuggestions';
 
 function SearchInterface({ onResults, selectedDocuments = [], advancedFilters = null }) {
     const [query, setQuery] = useState('');
@@ -142,6 +143,12 @@ function SearchInterface({ onResults, selectedDocuments = [], advancedFilters = 
                         )}
                     </button>
                 </div>
+
+                <SmartSuggestions onSuggestionClick={(question) => {
+                    setQuery(question);
+                    // Optional: auto-submit
+                    // handleSubmit({ preventDefault: () => {} });
+                }} />
 
                 <div className="modality-filters">
                     <span className="filter-label">Search in:</span>

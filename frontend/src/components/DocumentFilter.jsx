@@ -43,10 +43,13 @@ function DocumentFilter({ selectedDocuments, onFilterChange }) {
                 className="filter-toggle btn-secondary"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                📁 Filter by Document
-                {selectedDocuments.length > 0 && (
-                    <span className="filter-badge">{selectedDocuments.length}</span>
-                )}
+                <span className="toggle-label">
+                    📁 Filter by Document
+                    {selectedDocuments.length > 0 && (
+                        <span className="filter-badge">{selectedDocuments.length}</span>
+                    )}
+                </span>
+                <span className="arrow">{isOpen ? '▲' : '▼'}</span>
             </button>
 
             {isOpen && (

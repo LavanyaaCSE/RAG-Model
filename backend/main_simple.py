@@ -457,6 +457,41 @@ async def get_document_chunks(document_id: int):
     return doc.get("chunks", [])
 
 
+@app.get("/api/suggestions")
+async def get_suggestions():
+    """Get smart suggestions based on random document chunks."""
+    try:
+        import random
+        from rag_service import generate_suggestions
+        
+        # Get all available chunks from all documents
+        all_chunks = []
+        for doc in documents_store:
+            if "chunks" in doc:
+                all_chunks.extend(doc["chunks"])
+        
+        logger.info(f"Suggestions: Found {len(documents_store)} docs, {len(all_chunks)} chunks")
+        
+        if not all_chunks:
+            return []
+            
+        # Select random chunks (3-5)
+        sample_size = min(len(all_chunks), 5)
+        selected_chunks = random.sample(all_chunks, sample_size)
+        
+        # Generate suggestions
+        suggestions = generate_suggestions(selected_chunks)
+        
+        if not suggestions:
+             logger.warning("Suggestions generation returned empty list")
+        
+        return suggestions
+        
+    except Exception as e:
+        logger.error(f"Error getting suggestions: {e}")
+        return []
+
+
 @app.post("/api/query/")
 async def query(request: dict):
     """Query endpoint with RAG."""

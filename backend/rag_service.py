@@ -105,3 +105,43 @@ Answer (include citations):"""
                 "audio_segments": 0
             }
         }
+
+
+def generate_suggestions(chunks: list[dict]) -> list[str]:
+    """Generate suggested questions based on document chunks."""
+    try:
+        if not chunks:
+            return []
+            
+        # Prepare context
+        context_text = "\n\n".join([c["content"][:500] for c in chunks])
+        
+        prompt = f"""Based on the following text snippets from a user's documents, generate 3 short, specific, and interesting questions that a user might ask to learn more about this content.
+        
+Text Snippets:
+{context_text}
+
+Generate ONLY the 3 questions, one per line. Do not number them. Do not add any other text."""
+
+        response = ollama.chat(
+            model=OLLAMA_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            options={"temperature": 0.7}
+        )
+        
+        content = response['message']['content'].strip()
+        logger.info(f"Raw suggestions content: {content}")
+        
+        questions = [q.strip("- ").strip() for q in content.split('\n') if q.strip()]
+        
+        # Filter out garbage or too long questions
+        valid_questions = [q for q in questions if len(q) < 150 and "?" in q]
+        
+        if not valid_questions:
+            logger.warning(f"No valid questions after filtering. Raw questions: {questions}")
+        
+        return valid_questions[:3]
+        
+    except Exception as e:
+        logger.error(f"Error generating suggestions: {e}")
+        return []

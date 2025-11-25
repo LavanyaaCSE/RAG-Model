@@ -6,6 +6,7 @@
 .filter-toggle {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-sm);
     padding: 0.75rem 1.25rem;
     background: var(--bg-elevated);
@@ -16,6 +17,18 @@
     font-size: 0.9375rem;
     font-weight: 500;
     transition: all var(--transition-base);
+    width: 100%;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.arrow {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 .filter-toggle:hover {
