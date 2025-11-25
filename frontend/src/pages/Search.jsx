@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SearchInterface from '../components/SearchInterface';
 import ResultsDisplay from '../components/ResultsDisplay';
 import DocumentFilter from '../components/DocumentFilter';
+import AdvancedFilters from '../components/AdvancedFilters';
 import SimilaritySearch from '../components/SimilaritySearch';
 import ImageSearch from '../components/ImageSearch';
 import './Search.css';
@@ -9,6 +10,7 @@ import './Search.css';
 function Search() {
     const [results, setResults] = useState(null);
     const [selectedDocuments, setSelectedDocuments] = useState([]);
+    const [advancedFilters, setAdvancedFilters] = useState(null);
     const [searchMode, setSearchMode] = useState('text'); // 'text', 'similarity', or 'image'
 
     const handleResults = (data) => {
@@ -18,6 +20,11 @@ function Search() {
     const handleFilterChange = (docIds) => {
         setSelectedDocuments(docIds);
         setResults(null);
+    };
+
+    const handleAdvancedFilterChange = (filters) => {
+        setAdvancedFilters(filters);
+        setResults(null); // Clear results when filters change
     };
 
     return (
@@ -51,14 +58,18 @@ function Search() {
 
                 {searchMode === 'text' ? (
                     <>
-                        <DocumentFilter
-                            selectedDocuments={selectedDocuments}
-                            onFilterChange={handleFilterChange}
-                        />
+                        <div className="filters-row">
+                            <DocumentFilter
+                                selectedDocuments={selectedDocuments}
+                                onFilterChange={handleFilterChange}
+                            />
+                            <AdvancedFilters onFilterChange={handleAdvancedFilterChange} />
+                        </div>
 
                         <SearchInterface
                             onResults={handleResults}
                             selectedDocuments={selectedDocuments}
+                            advancedFilters={advancedFilters}
                         />
 
                         {results && <ResultsDisplay results={results} />}
@@ -77,9 +88,9 @@ function Search() {
                         )}
                     </>
                 ) : searchMode === 'similarity' ? (
-                    <SimilaritySearch />
+                    <SimilaritySearch advancedFilters={advancedFilters} />
                 ) : (
-                    <ImageSearch />
+                    <ImageSearch advancedFilters={advancedFilters} />
                 )}
             </div>
         </div>

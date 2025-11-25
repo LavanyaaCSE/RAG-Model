@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import './ImageSearch.css';
 
-function ImageSearch() {
+function ImageSearch({ advancedFilters = null }) {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -61,6 +61,10 @@ function ImageSearch() {
         setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
+
+        if (advancedFilters) {
+            formData.append('filters', JSON.stringify(advancedFilters));
+        }
 
         try {
             const response = await axios.post('http://localhost:8000/api/find-similar-image', formData, {

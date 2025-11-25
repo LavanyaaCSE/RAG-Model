@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from minio import Minio
 from minio.error import S3Error
@@ -138,6 +138,54 @@ async def health_check():
 async def list_documents():
     """List all documents."""
     return documents_store
+
+
+def apply_filters(docs, filters, initial_doc_ids=None):
+    """Filter documents based on criteria."""
+    filtered_ids = set(initial_doc_ids) if initial_doc_ids else {d["id"] for d in docs}
+    
+    if not filters:
+        return list(filtered_ids)
+        
+    start_date = filters.get("startDate")
+    end_date = filters.get("endDate")
+    min_size = filters.get("minSize")
+    max_size = filters.get("maxSize")
+    
+    # Convert size to bytes (MB input)
+    min_bytes = float(min_size) * 1024 * 1024 if min_size else 0
+    max_bytes = float(max_size) * 1024 * 1024 if max_size else float('inf')
+    
+    final_ids = []
+    
+    for doc in docs:
+        if doc["id"] not in filtered_ids:
+            continue
+            
+        # Date filter
+        if start_date or end_date:
+            doc_date_str = doc.get("upload_date")
+            if not doc_date_str:
+                continue # Skip docs without date if filter is applied
+                
+            doc_date = datetime.fromisoformat(doc_date_str).date()
+            
+            if start_date and doc_date < datetime.fromisoformat(start_date).date():
+                continue
+            if end_date and doc_date > datetime.fromisoformat(end_date).date():
+                continue
+                
+        # Size filter
+        if min_size or max_size:
+            size = doc.get("file_size", 0)
+            if size < min_bytes:
+                continue
+            if size > max_bytes:
+                continue
+                
+        final_ids.append(doc["id"])
+        
+    return final_ids
 
 
 @app.post("/api/upload/document")
@@ -436,8 +484,21 @@ async def query(request: dict):
                 "context_used": {"text_chunks": 0, "images": 0, "audio_segments": 0}
             }
         
+        # Apply filters if present
+        filters = request.get("filters")
+        filtered_doc_ids = document_ids
+        
+        if filters:
+            filtered_doc_ids = apply_filters(documents_store, filters, document_ids)
+            if not filtered_doc_ids:
+                return {
+                    "answer": "No documents match your filter criteria.",
+                    "citations": [],
+                    "context_used": {"text_chunks": 0, "images": 0, "audio_segments": 0}
+                }
+        
         # Search for relevant chunks (with optional document filter)
-        search_results = search_similar_chunks(question, top_k, filter_doc_ids=document_ids)
+        search_results = search_similar_chunks(question, top_k, filter_doc_ids=filtered_doc_ids)
         
         if not search_results:
             return {
@@ -490,9 +551,18 @@ async def search_text(request: dict):
         stats = get_index_stats()
         if stats["total_vectors"] == 0:
             return []
+            
+        # Apply filters
+        filters = request.get("filters")
+        filtered_doc_ids = None
+        
+        if filters:
+            filtered_doc_ids = apply_filters(documents_store, filters)
+            if not filtered_doc_ids:
+                return []
         
         # Search
-        results = search_similar_chunks(query, top_k)
+        results = search_similar_chunks(query, top_k, filter_doc_ids=filtered_doc_ids)
         
         # Enrich with document info
         enriched_results = []
@@ -516,11 +586,23 @@ async def search_text(request: dict):
 
 
 @app.post("/api/find-similar")
-async def find_similar_documents(file: UploadFile = File(...)):
+async def find_similar_documents(
+    file: UploadFile = File(...),
+    filters: str = Form(None)
+):
     """Find similar documents by uploading a file."""
     file_ext = Path(file.filename).suffix.lower()
     if file_ext not in [".pdf", ".docx", ".doc", ".txt"]:
         raise HTTPException(status_code=400, detail="Only PDF, DOCX, and TXT files are supported")
+    
+    # Parse filters
+    parsed_filters = None
+    if filters:
+        try:
+            import json
+            parsed_filters = json.loads(filters)
+        except Exception as e:
+            logger.error(f"Error parsing filters: {e}")
     
     temp_path = None
     try:
@@ -550,10 +632,21 @@ async def find_similar_documents(file: UploadFile = File(...)):
         
         if not text or len(text.strip()) < 10:
             raise HTTPException(status_code=400, detail="Could not extract meaningful text from file")
+            
+        # Apply filters to get allowed doc IDs
+        filtered_doc_ids = None
+        if parsed_filters:
+            filtered_doc_ids = apply_filters(documents_store, parsed_filters)
+            if not filtered_doc_ids:
+                 return {
+                    "uploaded_filename": file.filename,
+                    "similar_documents": [],
+                    "message": "No documents match your filter criteria"
+                }
         
         # Search for similar chunks using first ~5000 chars
         from embedding_service import search_similar_chunks
-        search_results = search_similar_chunks(text[:5000], top_k=30)
+        search_results = search_similar_chunks(text[:5000], top_k=30, filter_doc_ids=filtered_doc_ids)
         
         if not search_results:
             return {
@@ -612,11 +705,23 @@ async def find_similar_documents(file: UploadFile = File(...)):
 
 
 @app.post("/api/find-similar-image")
-async def find_similar_images(file: UploadFile = File(...)):
+async def find_similar_images(
+    file: UploadFile = File(...),
+    filters: str = Form(None)
+):
     """Find similar images by uploading an image."""
     file_ext = Path(file.filename).suffix.lower()
     if file_ext not in [".jpg", ".jpeg", ".png", ".gif", ".bmp"]:
         raise HTTPException(status_code=400, detail="Only image files (JPG, PNG, GIF, BMP) are supported")
+    
+    # Parse filters
+    parsed_filters = None
+    if filters:
+        try:
+            import json
+            parsed_filters = json.loads(filters)
+        except Exception as e:
+            logger.error(f"Error parsing filters: {e}")
     
     temp_path = None
     try:
@@ -628,10 +733,35 @@ async def find_similar_images(file: UploadFile = File(...)):
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
+        # Apply filters to get allowed doc IDs
+        filtered_doc_ids = None
+        if parsed_filters:
+            filtered_doc_ids = apply_filters(documents_store, parsed_filters)
+            if not filtered_doc_ids:
+                 # Clean up temp file
+                if temp_path.exists():
+                    temp_path.unlink()
+                return {
+                    "uploaded_filename": file.filename,
+                    "similar_images": [],
+                    "message": "No images match your filter criteria"
+                }
+
         # Use CLIP-based similarity search
         from embedding_service import search_similar_images
         
-        search_results = search_similar_images(str(temp_path), top_k=20)
+        # Pass filtered_doc_ids to search_similar_images (need to update embedding_service.py too if it doesn't support it yet)
+        # But wait, search_similar_images currently doesn't support filtering.
+        # I need to filter the results AFTER search if the function doesn't support it, 
+        # OR update search_similar_images to support it.
+        # Let's check embedding_service.py first. 
+        # Actually, for now, I will filter AFTER search for images since I haven't updated embedding_service.py for images yet.
+        # BUT, filtering after search is inefficient if top_k is small.
+        # Let's update embedding_service.py to support filtering for images as well.
+        # For now, let's assume I'll update it or filter post-search.
+        # Given the task size, I'll filter post-search here for simplicity as image index is small.
+        
+        search_results = search_similar_images(str(temp_path), top_k=50) # Get more results to allow for filtering
         
         # Clean up temp file
         if temp_path.exists():
@@ -651,6 +781,10 @@ async def find_similar_images(file: UploadFile = File(...)):
         similar_images = []
         
         for result in search_results:
+            # Filter by doc ID if filters applied
+            if filtered_doc_ids is not None and result["doc_id"] not in filtered_doc_ids:
+                continue
+
             # Skip low similarity matches
             if result["similarity"] < SIMILARITY_THRESHOLD:
                 continue

@@ -74,6 +74,7 @@ export const hybridSearch = async (query, topK = 5, modalities = ['text', 'image
 
 // Query endpoint
 export const queryRAG = async (requestBody) => {
+    // requestBody should now include filters if present
     return api.post('/query/', requestBody);
 };
 

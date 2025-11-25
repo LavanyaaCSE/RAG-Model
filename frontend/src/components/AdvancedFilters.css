@@ -1,0 +1,158 @@
+.advanced-filters-container {
+    position: relative;
+    z-index: 10;
+}
+
+.btn-filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    height: 46px;
+    /* Match DocumentFilter height usually */
+}
+
+.btn-filter-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+}
+
+.btn-filter-toggle.active {
+    background: var(--bg-elevated);
+    border-color: var(--primary-color);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.arrow {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.advanced-filters-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-lg);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+    animation: slideDown 0.2s ease-out;
+    box-shadow: var(--shadow-lg);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filter-row {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--bg-base);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.input-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-right: var(--spacing-sm);
+    white-space: nowrap;
+}
+
+.filter-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.filter-input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-reset {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.btn-reset:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+.btn-apply {
+    padding: 0.5rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-apply:hover {
+    background: var(--primary-hover);
+}

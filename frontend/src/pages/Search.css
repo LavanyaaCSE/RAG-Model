@@ -1,32 +1,19 @@
 .search-page {
-    padding: var(--spacing-xl) 0;
-    min-height: calc(100vh - 200px);
-}
-
-.page-header {
-    margin-bottom: var(--spacing-2xl);
-    text-align: center;
+    padding-bottom: var(--spacing-xl);
 }
 
 .search-mode-toggle {
     display: flex;
-    gap: var(--spacing-md);
     justify-content: center;
+    gap: var(--spacing-md);
     margin-bottom: var(--spacing-xl);
-    padding: 0.5rem;
-    background: var(--bg-elevated);
-    border-radius: var(--radius-lg);
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .mode-btn {
-    flex: 1;
     padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-md);
-    background: transparent;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
     color: var(--text-secondary);
     font-weight: 500;
     cursor: pointer;
@@ -34,46 +21,44 @@
 }
 
 .mode-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-hover);
     color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 .mode-btn.active {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: var(--primary-color);
     color: white;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
 }
 
-.page-header h2 {
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-primary);
+.filters-row {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    align-items: flex-start;
 }
 
-.page-header p {
-    color: var(--text-secondary);
-    margin: 0;
+.filters-row>* {
+    flex: 1;
 }
 
 .search-placeholder {
     text-align: center;
     padding: var(--spacing-2xl);
-    margin-top: var(--spacing-2xl);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xl);
 }
 
 .placeholder-icon {
-    font-size: 4rem;
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
     display: block;
-    margin-bottom: var(--spacing-lg);
     opacity: 0.5;
 }
 
 .search-placeholder h3 {
     color: var(--text-primary);
-    margin-bottom: var(--spacing-md);
-}
-
-.search-placeholder p {
-    color: var(--text-muted);
-    max-width: 500px;
-    margin: 0 auto;
+    margin-bottom: var(--spacing-sm);
 }

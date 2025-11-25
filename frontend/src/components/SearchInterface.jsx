@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { queryRAG } from '../api';
 import './SearchInterface.css';
 
-function SearchInterface({ onResults, selectedDocuments = [] }) {
+function SearchInterface({ onResults, selectedDocuments = [], advancedFilters = null }) {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -27,6 +27,10 @@ function SearchInterface({ onResults, selectedDocuments = [] }) {
 
             if (selectedDocuments.length > 0) {
                 requestBody.document_ids = selectedDocuments;
+            }
+
+            if (advancedFilters) {
+                requestBody.filters = advancedFilters;
             }
 
             const response = await queryRAG(requestBody);

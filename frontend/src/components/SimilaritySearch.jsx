@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import './SimilaritySearch.css';
 
-function SimilaritySearch() {
+function SimilaritySearch({ advancedFilters = null }) {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
@@ -53,6 +53,10 @@ function SimilaritySearch() {
         setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
+
+        if (advancedFilters) {
+            formData.append('filters', JSON.stringify(advancedFilters));
+        }
 
         try {
             const response = await axios.post('http://localhost:8000/api/find-similar', formData, {
