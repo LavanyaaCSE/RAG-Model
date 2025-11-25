@@ -1,0 +1,52 @@
+# FastAPI and Server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# LLM and Embeddings
+ollama==0.1.6
+sentence-transformers==2.2.2
+transformers==4.35.2
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Document Processing
+PyPDF2==3.0.1
+pdfplumber==0.10.3
+python-docx==1.1.0
+Pillow==10.1.0
+
+# Audio Processing
+openai-whisper==20231117
+pydub==0.25.1
+soundfile==0.12.1
+
+# NLP and Chunking
+spacy==3.7.2
+nltk==3.8.1
+
+# Vector Database
+faiss-cpu>=1.7.0
+numpy==1.24.3
+
+# Database
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+alembic==1.12.1
+
+# Object Storage
+minio==7.2.0
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+httpx==0.25.2
+aiofiles==23.2.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0

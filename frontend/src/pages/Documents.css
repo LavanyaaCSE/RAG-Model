@@ -1,0 +1,131 @@
+.documents-page {
+    min-height: calc(100vh - 200px);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.page-header h2 {
+    margin: 0;
+}
+
+/* Filters */
+.documents-filters {
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.loading-state p {
+    color: var(--text-secondary);
+    margin-top: var(--spacing-md);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Documents Grid */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.document-card {
+    padding: var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-md);
+    transition: all var(--transition-base);
+}
+
+.document-card:hover {
+    transform: translateY(-4px);
+}
+
+.document-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.document-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-name {
+    margin: 0 0 var(--spacing-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.document-meta {
+    display: flex;
+    gap: var(--spacing-sm);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.document-status {
+    margin-top: var(--spacing-sm);
+}
+
+.document-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.document-actions .btn {
+    padding: 0.5rem;
+    min-width: auto;
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .page-header button {
+        width: 100%;
+    }
+
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+}
