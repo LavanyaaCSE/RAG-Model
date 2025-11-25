@@ -54,6 +54,9 @@ def generate_answer(question: str, context_chunks: list[dict]) -> dict:
         
         # Create prompt
         prompt = f"""You are a precise AI assistant. Answer the question strictly using ONLY the provided context.
+
+IMPORTANT: If you see [Extracted Metadata] sections in the context, those contain factual information extracted from the documents. PRIORITIZE this metadata when answering questions about emails, phone numbers, dates, addresses, organizations, or person names.
+
 If the answer is not found in the context, say "I cannot find the answer in the provided documents."
 Do not use outside knowledge. Use citations [1], [2], etc. to reference the sources.
 
