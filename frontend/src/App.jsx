@@ -8,39 +8,32 @@ function App() {
     return (
         <Router>
             <div className="app">
-                <nav className="navbar">
-                    <div className="container flex items-center justify-between">
-                        <Link to="/" className="logo">
-                            <span className="logo-icon">🔍</span>
-                            <span className="logo-text">Multimodal RAG</span>
-                        </Link>
+                import Navbar from './components/Navbar';
 
-                        <div className="nav-links flex items-center gap-md">
-                            <Link to="/" className="nav-link">Home</Link>
-                            <Link to="/search" className="nav-link">Search</Link>
-                            <Link to="/documents" className="nav-link">Documents</Link>
-                        </div>
+                function App() {
+    return (
+                <Router>
+                    <div className="app">
+                        <Navbar />
+
+                        <main className="main-content">
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/search" element={<Search />} />
+                                <Route path="/documents" element={<Documents />} />
+                            </Routes>
+                        </main>
+
+                        <footer className="footer">
+                            <div className="container">
+                                <p className="footer-text">
+                                    Multimodal RAG System - Offline AI-Powered Search
+                                </p>
+                            </div>
+                        </footer>
                     </div>
-                </nav>
-
-                <main className="main-content">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/search" element={<Search />} />
-                        <Route path="/documents" element={<Documents />} />
-                    </Routes>
-                </main>
-
-                <footer className="footer">
-                    <div className="container">
-                        <p className="footer-text">
-                            Multimodal RAG System - Offline AI-Powered Search
-                        </p>
-                    </div>
-                </footer>
-            </div>
-        </Router>
-    );
+                </Router>
+                );
 }
 
-export default App;
+                export default App;

@@ -190,18 +190,44 @@
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .history-sidebar {
-        width: 100%;
+        position: fixed;
+        top: 64px;
+        /* Height of navbar */
+        left: 0;
+        bottom: 0;
+        width: 80%;
         max-width: 300px;
         transform: translateX(-100%);
         box-shadow: none;
+        z-index: 1000;
     }
 
     .history-sidebar:not(.collapsed) {
         transform: translateX(0);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--shadow-xl);
     }
 
     .search-page {
-        padding-left: 0;
+        padding-left: 0 !important;
+    }
+
+    /* Backdrop for mobile */
+    .sidebar-backdrop {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
