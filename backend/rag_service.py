@@ -82,13 +82,27 @@ Answer (include citations):"""
         
         answer = response['message']['content']
         
+        # Check if the model couldn't find the answer in the documents
+        cannot_answer_phrases = [
+            "cannot find",
+            "not found in",
+            "no information",
+            "don't have information",
+            "doesn't contain",
+            "not mentioned",
+            "not available in"
+        ]
+        
+        answer_lower = answer.lower()
+        cannot_answer = any(phrase in answer_lower for phrase in cannot_answer_phrases)
+        
         logger.info(f"Generated answer for question: {question[:50]}...")
         
         return {
             "answer": answer,
-            "citations": citations,
+            "citations": [] if cannot_answer else citations,  # Clear citations if can't answer
             "context_used": {
-                "text_chunks": len(context_chunks),
+                "text_chunks": 0 if cannot_answer else len(context_chunks),
                 "images": 0,
                 "audio_segments": 0
             }
